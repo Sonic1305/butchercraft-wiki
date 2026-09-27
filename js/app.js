@@ -148,8 +148,11 @@ async function main() {
     app.innerHTML = `<h1>Could not load data</h1><p class="muted">${esc(e.message)}</p><p>If you opened the file directly, serve the folder over HTTP (e.g. <code>python tools/serve.py</code>).</p>`;
     return;
   }
-  $("#foot").innerHTML = `Made by <a href="https://github.com/Sonic1305">Sonic1305</a> for TNP Limitless 8.<br>
+  $("#foot").innerHTML = `Made by <a href="https://github.com/Sonic1305">Sonic1305</a> for TNP Limitless 8. See <a href="https://sonic1305.github.io/">all guides</a> or <a id="feedback-link" href="https://sonic1305.github.io/#/feedback?guide=butchercraft-wiki">send feedback</a>.<br>
     <span class="small">Data generated ${esc(db.generated)} from the modpack (Butchercraft ${esc(db.versions.butchercraft || "")}). Unofficial fan page, Butchercraft by Lance5057.</span>`;
+  $("#feedback-link").addEventListener("click", e => {
+    e.currentTarget.href = `https://sonic1305.github.io/#/feedback?guide=butchercraft-wiki&page=${encodeURIComponent(location.href)}`;
+  });
   setupSearch();
   window.addEventListener("hashchange", route);
   route();
