@@ -70,6 +70,22 @@ function cards(items, opts = {}) {
   return `<div class="rcards">${ids.map(id => recipeCard(id, opts[id])).join("")}</div>`;
 }
 
+// "a Butcher Knife (4 Iron Ingots, 1 Stick), ..." counted from the shaped recipes
+function toolCosts() {
+  const parts = ["butcher_knife", "skinning_knife", "gut_knife", "bone_saw"].map(t => {
+    const r = db.crafting[craftingFor(`butchercraft:${t}`)[0]];
+    if (!r?.pattern) return esc(itemName(`butchercraft:${t}`));
+    const counts = {};
+    for (const c of r.pattern.join("")) if (c !== " ") counts[c] = (counts[c] || 0) + 1;
+    const cost = Object.entries(counts).map(([c, n]) => {
+      const name = itemName(pickItem(r.key[c]) || "");
+      return `${n} ${esc(name)}${n > 1 ? "s" : ""}`;
+    }).join(", ");
+    return `${esc(itemName(`butchercraft:${t}`))} (${cost})`;
+  });
+  return `a ${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}`;
+}
+
 // ---------- butchering processes ----------
 function range(min, max) {
   return min === max ? fmt(min) : `${fmt(min)}-${fmt(max)}`;
@@ -260,7 +276,7 @@ export function renderGuide(app) {
       <div class="cols">
         <div class="card">
           <ol class="steps">
-            <li><b>Make the tools</b>: a Butcher Knife, Skinning Knife, Gutting Knife and Bone Saw (each is just an iron ingot and a stick), plus a Meat Hook and a Butcher Block.</li>
+            <li><b>Make the tools</b>: ${toolCosts()}, plus a Meat Hook and a Butcher Block.</li>
             <li><b>Get a carcass</b>: right-click a cow, pig, sheep, goat, chicken or rabbit with the Butcher Knife. The animal dies at once and drops its carcass.</li>
             <li><b>Hang or lay it down</b>: cows, pigs, sheep and goats go on the <b>Meat Hook</b>, chickens and rabbits on the <b>Butcher Block</b>.</li>
             <li><b>Work through the steps</b>: right-click the carcass with the tool for the current step. When a step is done, its drops fall out: blood, hide, head, organs, bones, then the meat.</li>
